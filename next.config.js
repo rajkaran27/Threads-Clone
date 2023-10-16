@@ -22,6 +22,10 @@ const nextConfig = {
                 protocol: "https",
                 hostname: "placehold.co",
             },
+            {
+                protocol: "https",
+                hostname: "utfs.io", // Add this line to configure "utfs.io"
+            },
         ],
         typescript: {
             ignoreBuildErrors: true,
