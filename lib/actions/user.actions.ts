@@ -126,7 +126,39 @@ export async function fetchUsers({
 
         const totalUsersCount = await User.countDocuments(query);
 
+        const users = await usersQuery.exec()
+
+        const isNext = totalUsersCount > skipAmount + users.length
+
+        return { users, isNext }
     } catch (error: any) {
         throw new Error("error fetching users" + error.message);
+    }
+}
+
+
+export async function getActivity(userId: string) {
+    try {
+        connectToDB()
+
+        const userThreads = await Thread.find({ author: userId })
+
+        const childThreadIds = userThreads.reduce((acc, userThread) => {
+            return acc.concat(userThread.children)
+        },[])
+
+        const replies = await Thread.find({
+            _id: { $in: childThreadIds },
+            author: { $ne: userId }
+        }).populate({
+            path: 'author',
+            model: User,
+            select: 'name image _id'
+        })
+
+        return replies
+
+    } catch (error: any) {
+        throw new Error("error fetching activity" + error.message);
     }
 }
